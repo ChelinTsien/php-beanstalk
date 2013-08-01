@@ -142,12 +142,12 @@ void bsc_consistent_add_server(void *s, bsc *svr, unsigned int weight) /* {{{ */
 {
 	bsc_consistent_state_t *state = s;
 	int i, key_len, points = weight * BSC_CONSISTENT_POINTS;
-	unsigned int seed = state->hash->init(), hash;
+	unsigned int seed, hash;
 	
 	/* buffer for "host:port-i\0" */
 	char *key = emalloc(strlen(svr->host) + MAX_LENGTH_OF_LONG * 2 + 3);
 	key_len = sprintf(key, "%s:%d-", svr->host, svr->port);
-	seed = state->hash->combine(seed, key, key_len);
+	seed = bsc_hash(state->hash, key, key_len);
 
 	/* add weight * BSC_CONSISTENT_POINTS number of points for this server */
 	state->points = erealloc(state->points, sizeof(*state->points) * (state->num_points + points));
